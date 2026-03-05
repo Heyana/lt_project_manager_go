@@ -1,0 +1,144 @@
+.home {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+
+  .home-header {
+    height: 60px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    h1 {
+      font-size: 20px;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  .home-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+
+    .home-menu {
+      width: 200px;
+      background: #fff;
+      padding: 20px 0;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+
+      .menu-item {
+        padding: 16px 24px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        &:hover {
+          background: #f5f5f5;
+        }
+
+        &.active {
+          background: #e6f7ff;
+          border-right: 3px solid #1890ff;
+          color: #1890ff;
+        }
+
+        .menu-icon {
+          width: 20px;
+          height: 20px;
+          background: #ccc;
+          border-radius: 4px;
+        }
+
+        p {
+          margin: 0;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .project-list {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+
+      .loading,
+      .empty {
+        text-align: center;
+        padding: 60px 0;
+        color: #999;
+        font-size: 14px;
+      }
+
+      .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+
+        .project-card {
+          background: #fff;
+          border-radius: 8px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 0.3s;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+          }
+
+          .project-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+
+            .placeholder {
+              color: #999;
+              font-size: 14px;
+            }
+          }
+
+          .project-info {
+            padding: 16px;
+
+            .project-name {
+              font-size: 16px;
+              font-weight: 500;
+              margin: 0 0 8px 0;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            .project-desc {
+              font-size: 12px;
+              color: #666;
+              margin: 0;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+            }
+          }
+        }
+      }
+    }
+  }
+}

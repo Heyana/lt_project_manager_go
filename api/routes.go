@@ -34,6 +34,7 @@ func RegisterRoutes(router *gin.Engine, log *logrus.Logger) {
 	// 初始化有用的控制器
 	backupController := controllers.NewBackupController()
 	securityController := controllers.NewSecurityController()
+	projectController := controllers.NewProjectController()
 
 	// 设置API文档（仅开发环境）
 	if config.IsDev() {
@@ -112,7 +113,17 @@ func RegisterRoutes(router *gin.Engine, log *logrus.Logger) {
 			security.GET("/connections", securityController.GetConnections)           // 获取连接统计
 		}
 
-		// TODO: 添加其他业务控制器和路由
+		// 项目管理API
+		projects := api.Group("/projects")
+		{
+			projects.POST("", projectController.CreateProject)             // 创建项目
+			projects.GET("", projectController.GetProjects)                // 获取项目列表
+			projects.GET("/search", projectController.SearchProjects)      // 搜索项目
+			projects.GET("/:id", projectController.GetProject)             // 获取项目详情
+			projects.PUT("/:id", projectController.UpdateProject)          // 更新项目
+			projects.DELETE("/:id", projectController.DeleteProject)       // 删除项目
+			projects.PUT("/:id/sort", projectController.UpdateProjectSort) // 更新排序
+		}
 
 		// ==================== 认证路由（示例）====================
 		// 初始化JWT认证器

@@ -21,6 +21,16 @@ export default defineConfig({
   base: "./",
   server: {
     host: "0.0.0.0",
+    proxy: {
+      "/api": {
+        target: "http://localhost:23370",
+        changeOrigin: true,
+      },
+      "/cdn": {
+        target: "http://localhost:23370",
+        changeOrigin: true,
+      },
+    },
   },
   resolve: {
     alias: {

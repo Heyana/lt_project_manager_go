@@ -87,6 +87,8 @@ func RunMigrations() error {
 		&models.SystemConfig{},
 		&models.ResourceFile{}, // 通用资源文件表
 		&models.BackupRecord{}, // 备份记录表
+		&models.Project{},      // 项目表
+		&models.Resource{},     // 资源表
 	)
 	if err != nil {
 		return err

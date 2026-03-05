@@ -1,9 +1,13 @@
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent } from "vue";
+import { RouterView } from "vue-router";
 
 export default defineComponent({
   name: "App",
-  setup: () => () => com(),
-  mounted() {},
+  setup() {
+    return () => (
+      <div id="app">
+        <RouterView />
+      </div>
+    );
+  },
 });
-
-const com = () => <div>App</div>;

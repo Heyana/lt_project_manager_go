@@ -3,5 +3,6 @@ import { createApp } from "vue";
 import "reset-css";
 import "./styles/app.less";
 import App from "./App.tsx";
+import router from "./router";
 
-createApp(App).mount("#app");
+createApp(App).use(router).mount("#app");
