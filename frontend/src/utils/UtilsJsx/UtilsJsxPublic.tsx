@@ -1,5 +1,5 @@
 export const loadImg = (name: string, ext?: string) => {
-  return "./images/" + name + "." + (ext || "png");
+  return "/images/" + name + "." + (ext || "png");
 };
 export const createImg = (name: string, ext?: string) => {
   return <img src={loadImg(name, ext)} alt="" />;
@@ -73,7 +73,7 @@ export const onlyInput = (map: {
       // style={{ width }}
       style={Object.assign(
         style || {},
-        width ? { width: width || 0 + "px" } : { width: "100%" }
+        width ? { width: width || 0 + "px" } : { width: "100%" },
       )}
     />
   );

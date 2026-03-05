@@ -1,12 +1,3 @@
-// Web 适配层 - 替换 Electron 的 IPC 和文件系统功能
-import {
-  getProjects,
-  createProject,
-  updateProject,
-  deleteProject,
-  Project,
-} from "@/api/project";
-
 // 模拟 ipcRenderer
 export const ipcRenderer = {
   invoke: async (channel: string, ...args: any[]) => {

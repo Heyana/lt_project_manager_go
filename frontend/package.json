@@ -13,6 +13,7 @@
     "axios": "^1.13.6",
     "element-plus": "^2.13.3",
     "js-funcs": "^0.0.95",
+    "json-editor-vue": "^0.18.1",
     "less": "4.1.3",
     "less-loader": "7.0.0",
     "naive-ui": "^2.43.2",

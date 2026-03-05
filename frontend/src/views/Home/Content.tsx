@@ -1,25 +1,15 @@
 import { defineComponent, reactive, ref, watch } from "vue";
 import "./style/content.less";
-import router from "@renderer/router";
-import { createImg } from "@utils/UtilsJsx/UtilsJsxPublic";
-import { pagePopData, popCreateTempJsx } from "@utils/UtilsJsx/Pop";
-import { CustomJsx } from "@utils/UtilsJsx/UtilsJsx";
-import { lv } from "element-plus/es/locale";
-import { ipcRenderer, tFs, tPath } from "@utils/UtilsExports";
-import { BrowserWindow } from "electron";
-import { getId, mapObj, Obj } from "js-funcs";
+import router from "../../router";
+import { createImg } from "../../utils/UtilsJsx/UtilsJsxPublic";
+import { CustomJsx } from "../../utils/UtilsJsx/UtilsJsx";
 import {
-  MapEx,
-  formatDateToMinutes,
-  getTime,
-  toTimeString,
-  transByte,
-} from "@utils/UtilsJs";
-import { copyDir, copyFile, notHasCreateDir } from "@utils/UtilsNode";
-import { tip } from "@utils/UtilsEl";
-import { getAssetsPath } from "@utils/contant";
-import { ElButton, ElDialog } from "element-plus";
-import InterfaceData, { pageInterfaceData } from "./Content/InterfaceData";
+  getProjects,
+  createProject,
+  updateProject,
+  deleteProject,
+  type Project,
+} from "../../api/project";
 
 export default defineComponent({
   name: "Content",
@@ -31,13 +21,11 @@ export default defineComponent({
       () => {
         console.log("onIdChange");
         ins.onIdChange();
-      }
+      },
     );
     ins.onIdChange();
   },
 });
-
-const ls = [];
 
 const contentData = [
   {
@@ -92,164 +80,99 @@ const contentData = [
     }),
   },
 ];
-export type TypePageContent = {
-  savedItem: {
-    type: "local" | "link" | "videoPath";
-    imgPath: string;
-    filePath: string;
-    name: string;
-    parentType: string;
-    id: string;
-    time: number;
-  };
-};
+
 const ins = new (class {
   data = reactive({
     atvIdx: 0,
     subSelect: null as string | null,
-    savedMap: {} as {
-      [key: string]: MapEx<string, TypePageContent["savedItem"]>;
-    },
-  });
-  interfaceData = ref(null);
-  isLink: false;
-  refData = {
-    img: ref(null),
-  };
-  reacData = reactive({
-    interNames: [],
+    projects: [] as Project[],
+    loading: false,
   });
 
   onIdChange() {
     const id = router.currentRoute.value.params.id;
     const tId = Number(id) || 0;
-    ins.data.atvIdx = tId;
+    this.data.atvIdx = tId;
 
     const content = contentData[tId - 1];
     if (
       tId === 0 ||
-      !content?.child?.find((i) => i.name === ins.data.subSelect)
+      !content?.child?.find((i) => i.name === this.data.subSelect)
     ) {
-      ins.data.subSelect = null;
+      this.data.subSelect = null;
     }
   }
-  async init() {
-    const staticPath = await ipcRenderer.invoke("getStaticPath");
-    const projectManagerPath = tPath.join(staticPath, "projectManager.json");
-    const assetsPath = await getAssetsPath();
-    notHasCreateDir(assetsPath);
-    this.assetsPath = assetsPath;
-    this.staticPath = staticPath;
-    this.projectManagerPath = projectManagerPath;
-    const savedMap = tFs.readFileSync(projectManagerPath, "utf-8");
-    if (savedMap) {
-      mapObj(JSON.parse(savedMap), (k: any, v) => {
-        this.data.savedMap[k] = MapEx.formJSON(v);
-      });
-      console.log(this.data.savedMap, "this.data.savedMap");
-    }
 
-    this.reacData.interNames = await ipcRenderer.invoke("getInterfaceKeys");
-    console.log("Log-- ", this.reacData.interNames, " this.reacData.interMap ");
+  async init() {
+    await this.loadProjects();
   }
-  assetsPath: null | string;
-  projectManagerPath: null | string;
-  staticPath: null | string;
-  window = new (class {})();
+
+  async loadProjects() {
+    if (!this.data.subSelect) return;
+
+    this.data.loading = true;
+    try {
+      const typeMap: Record<string, string> = {
+        云展: "show",
+        "3D产品": "show",
+        云工厂: "show",
+        数字大屏: "show",
+        数字名片: "show",
+        虚拟展厅: "show",
+        宣传片: "show",
+        储能计算器: "tools",
+        光伏计算器: "tools",
+        充电桩管理平台: "platform",
+        EMS管理: "platform",
+        IOC: "platform",
+        智慧工厂: "platform",
+        源宇宙: "origin",
+      };
+
+      const type = typeMap[this.data.subSelect] || "table";
+      const res = await getProjects({ type, page: 1, page_size: 100 });
+      this.data.projects = res.list;
+    } catch (error) {
+      console.error("加载项目失败:", error);
+    } finally {
+      this.data.loading = false;
+    }
+  }
+
   reset() {}
 })();
 
 const upload = new (class {
   selectIndex = ref(0);
-  init() {}
-  selectKey = ref("web");
+  selectKey = ref<"web" | "local" | "video">("web");
   refData = {
     projectPath: ref(""),
   };
   projectData = reactive({
     name: "",
-    img: null,
+    img: null as string | null,
     link: "",
   });
+
   menu = {
     web: {
       name: "网页链接",
       titleName: "网页链接",
       icon: "web",
       isLink: true,
-      upload: () => {
-        const subSelect = ins.data.subSelect;
-        let map = ins.data.savedMap[subSelect];
-        if (!map) {
-          ins.data.savedMap[subSelect] = map = new MapEx();
-        }
-        const name = this.projectData.name;
-        const id = getId();
-        const img = this.projectData.img;
-        const imgExt = tPath.extname(img);
-        const imgName = "img_" + id + imgExt;
-        const imgPath = tPath.join(ins.assetsPath, imgName);
-        copyFile(img, imgPath);
-        const filePath = this.projectData.link;
-        map.set(id, {
-          type: "link",
-          imgPath: imgName,
-          filePath,
-          name,
-          parentType: ins.data.subSelect,
-          id,
-          time: new Date().getTime(),
-        });
-        tFs.writeFileSync(
-          ins.projectManagerPath,
-          JSON.stringify(ins.data.savedMap)
-        );
-        tip("复制文件完成");
-        console.log(map, "map");
+      upload: async () => {
+        // TODO: 实现上传逻辑
+        console.log("上传网页链接");
       },
     },
     local: {
       name: "项目打包文件",
       icon: "local",
       titleName: "文件夹位置",
-      // isFile:true,
       isFloder: true,
-      upload: () => {
-        const subSelect = ins.data.subSelect;
-        let map = ins.data.savedMap[subSelect];
-        if (!map) {
-          ins.data.savedMap[subSelect] = map = new MapEx();
-        }
-        tip("正在复制文件");
-        const name = this.projectData.name;
-        const id = getId();
-        const img = this.projectData.img;
-        const file = this.refData.projectPath.value;
-        const imgExt = tPath.extname(img);
-        const imgName = "img_" + id + imgExt;
-        const imgPath = tPath.join(ins.assetsPath, imgName);
-        copyFile(img, imgPath);
-        const fileName = name + "_" + id;
-        const filePath = tPath.join(ins.assetsPath, fileName);
-        copyDir({
-          srcPath: file,
-          targetPath: filePath,
-          isCover: true,
-        });
-        map.set(id, {
-          type: "local",
-          imgPath: imgName,
-          filePath: fileName,
-          name,
-          parentType: ins.data.subSelect,
-          id,
-          time: new Date().getTime(),
-        });
-        tFs.writeFileSync(
-          ins.projectManagerPath,
-          JSON.stringify(ins.data.savedMap)
-        );
-        tip("复制文件完成");
+      upload: async () => {
+        // TODO: 实现上传逻辑
+        console.log("上传本地项目");
       },
     },
     video: {
@@ -258,39 +181,9 @@ const upload = new (class {
       icon: "video",
       isFile: true,
       fileTip: "选择视频",
-      upload: () => {
-        const subSelect = ins.data.subSelect;
-        let map = ins.data.savedMap[subSelect];
-        if (!map) {
-          ins.data.savedMap[subSelect] = map = new MapEx();
-        }
-        tip("正在复制文件");
-        const name = this.projectData.name;
-        const id = getId();
-        const img = this.projectData.img;
-        const file = this.refData.projectPath.value;
-        const imgExt = tPath.extname(img);
-        const videoExt = tPath.extname(file);
-        const imgName = "img_" + id + imgExt;
-        const imgPath = tPath.join(ins.assetsPath, imgName);
-        const videoName = "video_" + id + videoExt;
-        const videoPath = tPath.join(ins.assetsPath, videoName);
-        copyFile(img, imgPath);
-        copyFile(file, videoPath);
-        map.set(id, {
-          type: "videoPath",
-          imgPath: imgName,
-          filePath: videoName,
-          name,
-          parentType: ins.data.subSelect,
-          id,
-          time: new Date().getTime(),
-        });
-        tFs.writeFileSync(
-          ins.projectManagerPath,
-          JSON.stringify(ins.data.savedMap)
-        );
-        tip("复制文件完成");
+      upload: async () => {
+        // TODO: 实现上传逻辑
+        console.log("上传视频");
       },
     },
   };
@@ -307,9 +200,6 @@ const com = () => (
     {contentData.map((_, idx) => {
       return createById(idx);
     })}
-    <div class="utils">
-      <InterfaceData ref={ins.interfaceData}></InterfaceData>
-    </div>
   </div>
 );
 
@@ -324,15 +214,8 @@ const createTitle = (map: { name: string; num?: number; child: any[] }) => {
     </div>
   );
 };
-type TypeContent = {
-  item: {
-    icon: string;
-    name: string;
-    click: Function;
-  };
-};
 
-const createItem = (map: TypeContent["item"][], parentIndex: number) => {
+const createItem = (map: any[], parentIndex: number) => {
   return (
     <div class="items">
       {map.map((i) => {
@@ -341,11 +224,11 @@ const createItem = (map: TypeContent["item"][], parentIndex: number) => {
             class="item"
             onClick={() => {
               const id = router.currentRoute.value.params.id;
-              console.log(parentIndex, id, "parentIndex,id");
               if (Number(id) !== parentIndex) {
                 router.push("/home/content/" + parentIndex);
               }
               ins.data.subSelect = i.name;
+              ins.loadProjects();
             }}
           >
             <div class="icon">{createImg("classify/" + i.icon)}</div>
@@ -362,7 +245,9 @@ const createItem = (map: TypeContent["item"][], parentIndex: number) => {
 };
 
 const createById = (index: number) => {
-  const { name, num, child } = contentData[index];
+  const content = contentData[index];
+  if (!content) return null;
+  const { name, num, child } = content;
   const tIdx = index + 1;
   const sub = ins.data.subSelect;
   const show = ins.data.atvIdx === 0 || ins.data.atvIdx === tIdx;
@@ -370,16 +255,8 @@ const createById = (index: number) => {
     <div class={sub && show ? "sub_items" : ""} v-show={show}>
       {[
         ins.data.atvIdx === 0
-          ? createTitle({
-              name,
-              num,
-              child,
-            })
-          : createSubTitle({
-              name,
-              num,
-              child,
-            }),
+          ? createTitle({ name, num, child })
+          : createSubTitle({ name, num, child }),
         sub ? createSubList() : createItem(child, tIdx),
       ]}
     </div>
@@ -388,8 +265,6 @@ const createById = (index: number) => {
 
 const createSubTitle = (map: { name: string; num?: number; child: any[] }) => {
   const { child } = map;
-  const { refData } = ins;
-  const { projectData } = upload;
   const sub = ins.data.subSelect;
   return (
     <div class="content-title">
@@ -415,309 +290,66 @@ const createSubTitle = (map: { name: string; num?: number; child: any[] }) => {
         name: "上传应用",
         show: ins.data.subSelect !== null,
         click() {
-          // 重置新增弹窗的临时数据，避免受到上一次编辑影响
-          projectData.name = "";
-          projectData.img = null;
-          projectData.link = "";
-          refData.img.value = null;
-          upload.refData.projectPath.value = "";
-          upload.selectKey.value = "web";
-          upload.selectIndex.value = 0;
-
-          pagePopData.open(() => {
-            const uploadMap = upload.menu[upload.selectKey.value];
-            return popCreateTempJsx({
-              title: "添加项目",
-              type: "infoWindow",
-              child: () => [
-                CustomJsx.Text({
-                  def: projectData.name,
-                  tip: "请输入项目名称",
-                  onDone(text) {
-                    projectData.name = text;
-                    console.log(text, "text");
-                  },
-                }),
-                CustomJsx.Empty(16),
-                CustomJsx.TileSwitch({
-                  index: upload.selectIndex,
-                  menu: mapObj(upload.menu, (k, v) => {
-                    return {
-                      name: v.name,
-                      icon: "content/" + v.icon,
-                      click: () => {
-                        upload.selectKey.value = k;
-                        console.log(
-                          upload.selectKey.value,
-                          " upload.selectKey.value "
-                        );
-                      },
-                    };
-                  }),
-                }),
-                CustomJsx.Empty(16),
-                CustomJsx.Img({
-                  def: refData.img,
-                  onDone(img) {
-                    projectData.img = img;
-                  },
-                }),
-                CustomJsx.Empty(16),
-                CustomJsx.Title(uploadMap.titleName),
-                CustomJsx.Empty(16),
-                uploadMap.isLink &&
-                  CustomJsx.Text({
-                    def: upload.projectData.link,
-                    iconMap: {
-                      url: "custom/link",
-                    },
-                    tip: "请输入链接",
-                    onDone: (text) => {
-                      upload.projectData.link = text;
-                      console.log(text, "text");
-                    },
-                  }),
-                uploadMap.isFloder &&
-                  CustomJsx.FloderSelect({
-                    def: upload.refData.projectPath,
-                    tip: uploadMap.fileTip,
-                    onDone: (text) => {
-                      console.log(text, "text");
-                    },
-                  }),
-                uploadMap.isFile &&
-                  CustomJsx.FileSelect({
-                    def: upload.refData.projectPath,
-                    tip: uploadMap.fileTip,
-                    type: "video",
-                    onDone: (text) => {
-                      upload.refData.projectPath.value = text;
-                      console.log(text, "text");
-                    },
-                  }),
-                CustomJsx.Empty(16),
-                CustomJsx.RightButtons([
-                  {
-                    name: "添加",
-                    click: async () => {
-                      if (
-                        ins.data.savedMap[ins.data.subSelect]?.find(
-                          (k, v) => v.name === upload.projectData.name
-                        )
-                      ) {
-                        tip("该项目已存在", "error");
-                        return;
-                      }
-                      uploadMap.upload();
-                      pagePopData.close();
-                    },
-                  },
-                ]),
-              ],
-              onClose: () => {
-                pagePopData.close();
-              },
-            });
-          });
+          // TODO: 打开上传对话框
+          console.log("打开上传对话框");
         },
       })}
     </div>
   );
 };
+
 const createSubList = () => {
+  const subSelect = ins.data.subSelect;
+  if (!subSelect) return null;
+
+  if (ins.data.loading) {
+    return <div class="loading">加载中...</div>;
+  }
+
+  if (ins.data.projects.length === 0) {
+    return <div class="empty">暂无项目</div>;
+  }
+
   return (
     <div class="sub_list">
-      {ins.data.savedMap[ins.data.subSelect]?.map((k, v) => {
+      {ins.data.projects.map((project) => {
         return (
-          <div>
+          <div key={project.id}>
             <div class="img">
-              <img src={tPath.join(ins.assetsPath, v.imgPath)} alt="" />
+              <img
+                src={project.thumbnail || "/images/logo.png"}
+                alt={project.name}
+              />
               <div class="tools">
                 <div
                   onClick={() => {
-                    console.log(v, "v");
-                    ipcRenderer.invoke("setChildWin", {
-                      link: v.filePath,
-                      type: v.type,
-                      name: v.name,
-                    });
+                    // 打开项目
+                    if (project.link_type === "url") {
+                      window.open(project.link, "_blank");
+                    } else {
+                      router.push(`/preview/${project.id}`);
+                    }
                   }}
                 >
                   打开项目
                 </div>
                 <div
                   onClick={() => {
-                    // 编辑项目：参考“添加项目”的弹窗样式，自动带出原始数据
-                    const assetsPath = ins.assetsPath as string;
-                    // 类型映射
-                    const typeKey =
-                      v.type === "link"
-                        ? "web"
-                        : v.type === "local"
-                        ? "local"
-                        : "video";
-
-                    // 预填基础信息
-                    upload.projectData.name = v.name;
-                    upload.projectData.link =
-                      v.type === "link" ? v.filePath : "";
-                    ins.refData.img.value = v.imgPath
-                      ? tPath.join(assetsPath, v.imgPath)
-                      : null;
-                    upload.refData.projectPath.value =
-                      v.type === "link"
-                        ? ""
-                        : tPath.join(assetsPath, v.filePath);
-
-                    pagePopData.open(() => {
-                      const uploadMap = upload.menu[typeKey];
-                      return popCreateTempJsx({
-                        title: "修改项目",
-                        type: "infoWindow",
-                        child: () => [
-                          CustomJsx.Text({
-                            def: upload.projectData.name,
-                            tip: "请输入项目名称",
-                            onDone(text) {
-                              upload.projectData.name = text;
-                            },
-                          }),
-                          CustomJsx.Empty(16),
-                          CustomJsx.Img({
-                            def: ins.refData.img,
-                            onDone(img) {
-                              upload.projectData.img = img;
-                            },
-                          }),
-                          CustomJsx.Empty(16),
-                          CustomJsx.Title(uploadMap.titleName),
-                          CustomJsx.Empty(16),
-                          v.type === "link" &&
-                            CustomJsx.Text({
-                              def: upload.projectData.link,
-                              iconMap: {
-                                url: "custom/link",
-                              },
-                              tip: "请输入链接",
-                              onDone(text) {
-                                upload.projectData.link = text;
-                              },
-                            }),
-                          v.type === "local" &&
-                            CustomJsx.FloderSelect({
-                              def: upload.refData.projectPath,
-                              tip: uploadMap.fileTip,
-                              onDone: (text) => {
-                                upload.refData.projectPath.value = text;
-                              },
-                            }),
-                          v.type === "videoPath" &&
-                            CustomJsx.FileSelect({
-                              def: upload.refData.projectPath,
-                              tip: uploadMap.fileTip,
-                              type: "video",
-                              onDone: (text) => {
-                                upload.refData.projectPath.value = text;
-                              },
-                            }),
-                          CustomJsx.RightButtons([
-                            {
-                              name: "保存",
-                              click: () => {
-                                const map =
-                                  ins.data.savedMap[ins.data.subSelect];
-                                if (!map) {
-                                  tip("项目数据不存在", "error");
-                                  return;
-                                }
-                                const curItem = map.get(k);
-                                if (!curItem) {
-                                  tip("项目数据不存在", "error");
-                                  return;
-                                }
-
-                                // 处理封面变更：如果用户重新选择了图片，则覆盖原有图片文件
-                                if (
-                                  upload.projectData.img &&
-                                  upload.projectData.img !==
-                                    tPath.join(assetsPath, curItem.imgPath)
-                                ) {
-                                  copyFile(
-                                    upload.projectData.img,
-                                    tPath.join(assetsPath, curItem.imgPath)
-                                  );
-                                }
-
-                                // 处理路径变更
-                                if (
-                                  curItem.type === "local" &&
-                                  upload.refData.projectPath.value
-                                ) {
-                                  copyDir({
-                                    srcPath: upload.refData.projectPath.value,
-                                    targetPath: tPath.join(
-                                      assetsPath,
-                                      curItem.filePath
-                                    ),
-                                    isCover: true,
-                                  });
-                                }
-                                if (
-                                  curItem.type === "videoPath" &&
-                                  upload.refData.projectPath.value
-                                ) {
-                                  copyFile(
-                                    upload.refData.projectPath.value,
-                                    tPath.join(assetsPath, curItem.filePath)
-                                  );
-                                }
-
-                                // 更新基础信息
-                                map.set(k, {
-                                  ...curItem,
-                                  name: upload.projectData.name,
-                                  filePath:
-                                    curItem.type === "link"
-                                      ? upload.projectData.link
-                                      : curItem.filePath,
-                                  time: new Date().getTime(),
-                                });
-                                tFs.writeFileSync(
-                                  ins.projectManagerPath,
-                                  JSON.stringify(ins.data.savedMap)
-                                );
-                                tip("修改成功");
-                                pagePopData.close();
-                              },
-                            },
-                          ]),
-                        ],
-                        onClose: () => {
-                          pagePopData.close();
-                        },
-                      });
-                    });
+                    // TODO: 编辑项目
+                    console.log("编辑项目", project);
                   }}
                 >
                   修改项目
-                </div>
-                <div
-                  v-show={ins.reacData.interNames.find((i) => {
-                    return i == v.name;
-                  })}
-                  onClick={() => {
-                    pageInterfaceData.open(v.name);
-                  }}
-                >
-                  查看接口
                 </div>
               </div>
             </div>
             <div class="bottom_out">
               <div class="bottom">
                 <div class="left">
-                  <div class="name">{v.name}</div>
-                  <div class="time">{toTimeString(new Date(v.time))}</div>
+                  <div class="name">{project.name}</div>
+                  <div class="time">
+                    {new Date(project.created_at || "").toLocaleString()}
+                  </div>
                 </div>
                 <div class="right">
                   <div class="icon"></div>

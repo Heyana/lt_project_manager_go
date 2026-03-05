@@ -3,7 +3,6 @@ import "./style/interface_data.less";
 import { ElDialog, ElButton, ElMessage } from "element-plus";
 import { formatDateToMinutes } from "@utils/UtilsJs";
 import { mapObj, Obj, transByte } from "js-funcs";
-import { ipcRenderer } from "@utils/UtilsExports";
 import JsonEditorVue from "json-editor-vue";
 import "vanilla-jsoneditor/themes/jse-theme-dark.css";
 export default defineComponent({
@@ -45,30 +44,30 @@ const ins = new (class {
   } as ProjectInner);
   dataInner = ref({} as InnerData["code"]);
   async open(name: string) {
-    console.log("Log-- ", name, "name");
-    const res = (await ipcRenderer.invoke("getProjectData", name)) as Obj;
-    if (!res) {
-      alert("暂无");
-      return;
-    }
-    const ls = [];
-    this.select.value = {
-      apiSize: Object.keys(res).length - 1,
-      name,
-      size: new Blob([JSON.stringify(res)]).size,
-      time: res.time || 0,
-      data: ls,
-    };
-    mapObj(res, (k: string, v) => {
-      console.log("Log-- ", v, "v");
-      if (k == "time") return;
-      ls.push({
-        url: k,
-        size: JSON.stringify(v.data)?.length || 0,
-        code: v,
-      });
-    });
-    this.reacData.show = true;
+    // console.log("Log-- ", name, "name");
+    // const res = (await ipcRenderer.invoke("getProjectData", name)) as Obj;
+    // if (!res) {
+    //   alert("暂无");
+    //   return;
+    // }
+    // const ls = [];
+    // this.select.value = {
+    //   apiSize: Object.keys(res).length - 1,
+    //   name,
+    //   size: new Blob([JSON.stringify(res)]).size,
+    //   time: res.time || 0,
+    //   data: ls,
+    // };
+    // mapObj(res, (k: string, v) => {
+    //   console.log("Log-- ", v, "v");
+    //   if (k == "time") return;
+    //   ls.push({
+    //     url: k,
+    //     size: JSON.stringify(v.data)?.length || 0,
+    //     code: v,
+    //   });
+    // });
+    // this.reacData.show = true;
   }
   setInnerData(data: InnerData) {
     this.dataInner.value = data.code;
@@ -146,7 +145,7 @@ const com = () => (
                           <div class="value">{v}</div>
                         </div>
                       );
-                    }
+                    },
                   )}
                 </div>
               );

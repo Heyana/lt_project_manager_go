@@ -1,7 +1,7 @@
 import { md5 } from "@allex/md5";
-import axios, { ResponseType } from "axios";
+import axios from "axios";
 import * as map from "js-funcs";
-import { sizeOf } from "./UtilsExports";
+import type { Buffer } from "node:buffer";
 export * as arrEx from "./UtilsJs/ArrayEx";
 export const base64ToArrayBuffer = async (base64: string) => {
   if (base64.indexOf(",") !== -1) base64 = getTruthBase64(base64);
@@ -97,7 +97,7 @@ export const fileAndBlobToCanvas = (
   size: {
     width: number;
     height: number;
-  }
+  },
 ): Promise<{
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -128,7 +128,7 @@ export const getCanvas = (
   options?: {
     sizeRatio?: number;
     width?: number;
-  }
+  },
 ): Promise<{
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -191,7 +191,7 @@ export const canvasToBlob = (
   type: "image/png" | "image/webp" | "image/jpeg" = "image/png",
   options?: {
     quality?: number;
-  }
+  },
 ): Promise<Blob> => {
   const { quality } = {
     quality: 1,
@@ -204,7 +204,7 @@ export const canvasToBlob = (
         s(blob as Blob);
       },
       type,
-      quality
+      quality,
     );
   });
 };
@@ -247,7 +247,7 @@ export const getNamesByNum = (
   baseName: string,
   length: any,
   beginNum = 1,
-  endName: string
+  endName: string,
 ) => {
   return (new Array(length) as any).fill("").map((_: any, index: number) => {
     const nowIndex = index + beginNum;
@@ -483,14 +483,14 @@ export const rmArrEle = (ls: any[], item: any) => {
 export const addElesFromIndexToArr = (
   ls: any[],
   item: any | any[],
-  index: number
+  index: number,
 ) => {
   const items = Array.isArray(item) ? item : [item];
   return ls.splice(index, 0, ...items);
 };
 
 export const getImgSizeByPath = (
-  p: string
+  p: string,
 ): {
   width: number;
   height: number;
@@ -628,57 +628,59 @@ export const copyText = (row: string) => {
   oInput.remove();
 };
 
-export const getDataType = (input: any):
-  "string" |
-  "number" |
-  "boolean" |
-  "undefined" |
-  "null" |
-  "array" |
-  "promise" |
-  "object" |
-  "symbol" |
-  "function" |
-  "bigint" |
-  "unknown" => {
+export const getDataType = (
+  input: any,
+):
+  | "string"
+  | "number"
+  | "boolean"
+  | "undefined"
+  | "null"
+  | "array"
+  | "promise"
+  | "object"
+  | "symbol"
+  | "function"
+  | "bigint"
+  | "unknown" => {
   switch (typeof input) {
-    case 'string':
-      return 'string';
-    case 'number':
-      return 'number';
-    case 'boolean':
-      return 'boolean';
-    case 'undefined':
-      return 'undefined';
-    case 'object':
+    case "string":
+      return "string";
+    case "number":
+      return "number";
+    case "boolean":
+      return "boolean";
+    case "undefined":
+      return "undefined";
+    case "object":
       if (input === null) {
-        return 'null';
+        return "null";
       } else if (Array.isArray(input)) {
-        return 'array';
-      } else if (typeof input.then === 'function') {
-        // 假设我们将 Promise 识别为 'promise' 类型  
-        return 'promise';
+        return "array";
+      } else if (typeof input.then === "function") {
+        // 假设我们将 Promise 识别为 'promise' 类型
+        return "promise";
       } else {
-        return 'object';
+        return "object";
       }
-    case 'symbol':
-      return 'symbol';
-    case 'function':
-      return 'function';
-    case 'bigint':
-      return 'bigint';
+    case "symbol":
+      return "symbol";
+    case "function":
+      return "function";
+    case "bigint":
+      return "bigint";
     default:
-      return 'unknown';
+      return "unknown";
   }
-}
+};
 export const formatDateToMinutes = (number: string) => {
   var time = new Date(Number(number));
   var year = time.getFullYear();
-  console.log('Log-- ',time, year, 'year');
-  var month = (1 + time.getMonth()).toString().padStart(2, '0'); // 月份从0开始，所以需要加1  
-  var day = time.getDate().toString().padStart(2, '0');
-  var hours = time.getHours().toString().padStart(2, '0');
-  var minutes = time.getMinutes().toString().padStart(2, '0');
+  console.log("Log-- ", time, year, "year");
+  var month = (1 + time.getMonth()).toString().padStart(2, "0"); // 月份从0开始，所以需要加1
+  var day = time.getDate().toString().padStart(2, "0");
+  var hours = time.getHours().toString().padStart(2, "0");
+  var minutes = time.getMinutes().toString().padStart(2, "0");
 
-  return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
-}  
+  return year + "-" + month + "-" + day + " " + hours + ":" + minutes;
+};
