@@ -1,0 +1,38 @@
+div {
+  color: #fff;
+}
+
+@font-face {
+  font-family: "pingFangSC-Medium";
+
+  src: url("../../fonts/PingFang/ Medium.ttf");
+
+  font-weight: normal;
+
+  font-style: normal;
+}
+
+// --n-fill-color: #fff;
+
+/* 定义滚动条的样式 */
+::-webkit-scrollbar {
+  position: fixed;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 10px; /* 设置滚动条的宽度 */
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  cursor: pointer;
+  background: rgba(67, 68, 72, 1);
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #888; /* 设置滚动条滑块的背景色 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(167, 168, 172, 1);
+}

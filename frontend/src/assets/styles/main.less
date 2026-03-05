@@ -1,0 +1,182 @@
+@import "./navie-ex.less";
+@mainBgc: rgb(240, 243, 247);
+.f-r(@val) {
+  flex: @val;
+  min-width: @val * 10%;
+  max-width: @val * 10%;
+}
+html,
+body,
+#app {
+  width: 100vw;
+  height: 100vh;
+  font-size: 16px;
+  overflow: hidden;
+  background-color: @menuBgc;
+}
+img {
+  width: 100%;
+  border-radius: 5px;
+}
+
+div {
+  box-sizing: border-box;
+  font-family: "PingFang SC";
+  font-style: normal;
+  font-size: 0.9rem;
+  color: #fff;
+}
+.main-bgc {
+  background-color: @mainBgc;
+}
+
+.contain (@isHover:false)when (@isHover=true) {
+  background-color: #fff;
+  border-radius: 16px;
+  margin: 4px;
+  &:hover {
+    .contarin-hover;
+  }
+}
+
+.contain (@isHover:false)when (@isHover=false) {
+  background-color: #fff;
+  border-radius: 16px;
+  margin: 4px;
+}
+.contarin-hover {
+  background-color: rgb(223, 228, 235);
+}
+
+.button {
+  background-color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  width: 150px;
+  transition: all 0.3s;
+  &:hover {
+    .contarin-hover;
+  }
+}
+.button-big {
+  width: 200px;
+  height: 70px;
+}
+.button-active {
+  box-shadow: 0 0 0 1px rgb(10, 169, 228);
+}
+
+.title-line {
+  background-color: rgb(231, 237, 255);
+}
+
+.radius-16 {
+  border-radius: 16px;
+}
+
+.button-blue {
+  .button;
+  background-color: rgb(38, 92, 255);
+  color: #fff;
+  font-weight: 700;
+
+  &:hover {
+    background-color: rgb(0, 51, 204);
+  }
+}
+
+.button-blue-big {
+  .button;
+  background-color: rgb(38, 92, 255);
+  color: #fff;
+  font-weight: 700;
+  .button-big;
+  &:hover {
+    background-color: rgb(0, 51, 204);
+  }
+}
+
+.button-base {
+  background-color: rgb(38, 92, 255);
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    background-color: rgb(0, 51, 204);
+  }
+}
+.position-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-small {
+  .button;
+  background-color: rgb(38, 92, 255);
+  font-weight: 700;
+  color: #fff;
+  .button-big;
+  width: 80px;
+  height: 35px;
+  line-height: 35px;
+  &:hover {
+    background-color: rgb(0, 51, 204);
+  }
+}
+.button-mini {
+  .button;
+  background-color: rgb(38, 92, 255);
+  font-weight: 700;
+  color: #fff;
+  .button-big;
+  width: 50px;
+  height: 30px;
+  line-height: 30px;
+  &:hover {
+    background-color: rgb(0, 51, 204);
+  }
+}
+
+.not-select {
+  -moz-user-select: none; /*火狐*/
+  -webkit-user-select: none; /*webkit浏览器*/
+  -ms-user-select: none; /*IE10*/
+  -khtml-user-select: none; /*早期浏览器*/
+  user-select: none;
+}
+.no-touch {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.iconfont-base {
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: #ccc;
+    border-radius: 7px;
+  }
+}
+
+.one_line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

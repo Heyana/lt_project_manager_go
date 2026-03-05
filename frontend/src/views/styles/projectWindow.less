@@ -1,0 +1,64 @@
+div {
+  box-sizing: border-box;
+}
+.project_window {
+  .full;
+  .title {
+    .w;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .left {
+      .h;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      gap: 8px;
+      .logo {
+        width: 71px;
+      }
+      .border {
+        .h;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      p {
+        color: rgba(255, 255, 255, 0.8);
+        font-family: Source Han Sans CN;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+    }
+    .right {
+      display: flex;
+      .h;
+      .close {
+        &:hover {
+          background: rgba(245, 60, 60, 0.74);
+        }
+      }
+      > div {
+        .h;
+        width: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        img {
+          .box(16);
+        }
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+      }
+    }
+  }
+  video,
+  iframe {
+    .w;
+    height: calc(100% - 32px);
+  }
+}

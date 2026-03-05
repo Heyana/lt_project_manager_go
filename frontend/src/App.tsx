@@ -1,13 +1,9 @@
 import { defineComponent } from "vue";
-import { RouterView } from "vue-router";
+import Home from "./views/Home";
 
 export default defineComponent({
   name: "App",
   setup() {
-    return () => (
-      <div id="app">
-        <RouterView />
-      </div>
-    );
+    return () => <Home />;
   },
 });

@@ -14,6 +14,8 @@ export default defineConfig({
         javascriptEnabled: true,
         additionalData: `
         @import "@/styles/index.less";
+        @import "@/styles/global/global.less";
+
         `,
       },
     },

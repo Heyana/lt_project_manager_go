@@ -1,8 +1,12 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 // @ts-ignore
 import "reset-css";
-import "./styles/app.less";
+import "./assets/styles/main.less";
 import App from "./App.tsx";
 import router from "./router";
 
-createApp(App).use(router).mount("#app");
+const app = createApp(App);
+const pinia = createPinia();
+
+app.use(router).use(pinia).mount("#app");
