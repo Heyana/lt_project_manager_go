@@ -1,0 +1,81 @@
+.title-btn {
+  width: 178px;
+  height: 63px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #fff;
+  color: #a1a1a1;
+  font-family: "PingFang SC";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 22px; /* 137.5% */
+  .fc;
+  transition: all 0.3s;
+  cursor: pointer;
+  gap: 5px;
+  .icon {
+    .box(28px);
+  }
+}
+
+.title-btn-active {
+  background: linear-gradient(90deg, #0aa9ff 0%, #1875ff 100%);
+  box-shadow: 0 8px 16px 0 rgba(19, 136, 255, 0.25);
+  color: #fff;
+  font-family: "PingFang SC";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 22px; /* 137.5% */
+}
+
+.btn {
+  display: flex;
+  width: 117px;
+  height: 36px;
+  padding: 7px 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px;
+  opacity: 0.6;
+  background: var(---, #165dff);
+  color: var(---Text-1, #fff);
+  text-align: right;
+
+  /* 16/CN-Regular */
+  font-family: "PingFang SC";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px; /* 150% */
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(---, #165dff) 80%, transparent);
+  }
+}
+
+.btn-sub {
+  border-radius: 6px;
+  border: 1px solid var(---, #165dff);
+  opacity: 0.6;
+  color: #165dff;
+  background: var(---, transparent);
+
+  /* 16/CN-Regular */
+  font-family: "PingFang SC";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px; /* 150% */
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(---, rgba(0, 0, 0, 0.1)) 80%,
+      transparent
+    );
+  }
+}
