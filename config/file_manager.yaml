@@ -1,0 +1,46 @@
+# File Manager 配置
+file_manager:
+  # 存储类型
+  type: "local"
+
+  # 本地存储基础路径
+  local_path: "./static/cdn/docments"
+
+  # 基础 URL（用于生成文件访问链接）
+  base_url: "http://localhost:8080"
+
+  # 启用功能
+  features:
+    upload: true
+    download: true
+    delete: true
+    preview: true
+    share: true
+
+  # 上传配置
+  upload:
+    # 允许的文件类型
+    allowed_types:
+      - image/*
+      - video/*
+      - application/pdf
+      - text/html
+      - application/zip
+    # 单次上传文件数量限制
+    max_files: 10
+    # 是否自动生成缩略图
+    auto_thumbnail: true
+
+  # 预览配置
+  preview:
+    # 图片预览尺寸
+    image_size: 1200
+    # 视频预览时长（秒）
+    video_duration: 30
+
+  # 分享配置
+  share:
+    # 分享链接有效期（小时）
+    expiration: 168 # 7天
+    # 是否需要密码
+    require_password: false

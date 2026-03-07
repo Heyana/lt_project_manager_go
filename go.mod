@@ -1,6 +1,6 @@
 module go_wails_project_manager
 
-go 1.23.0
+go 1.24
 
 toolchain go1.24.0
 
@@ -10,6 +10,9 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/glebarez/sqlite v1.11.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
+	github.com/heyango/file-library v0.2.4
+	github.com/heyango/file-manager v0.2.2
+	github.com/heyango/file-processor v0.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/sirupsen/logrus v1.9.3
@@ -19,7 +22,17 @@ require (
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.71
 	github.com/wailsapp/wails/v2 v2.10.1
 	gopkg.in/yaml.v3 v3.0.1
-	gorm.io/gorm v1.26.1
+	gorm.io/gorm v1.30.0
+)
+
+require (
+	github.com/chromedp/cdproto v0.0.0-20250724212937-08a3db8b4327 // indirect
+	github.com/chromedp/chromedp v0.14.2 // indirect
+	github.com/chromedp/sysutil v1.1.0 // indirect
+	github.com/go-json-experiment/json v0.0.0-20250725192818-e39067aee2d2 // indirect
+	github.com/gobwas/httphead v0.1.0 // indirect
+	github.com/gobwas/pool v0.2.1 // indirect
+	github.com/gobwas/ws v1.4.0 // indirect
 )
 
 require (
@@ -72,4 +85,10 @@ require (
 	modernc.org/mathutil v1.5.0 // indirect
 	modernc.org/memory v1.5.0 // indirect
 	modernc.org/sqlite v1.23.1 // indirect
+)
+
+replace (
+	github.com/heyango/file-library => E:\hxy\my-project\run-scene-backend\libs\file-library
+	github.com/heyango/file-manager => E:\hxy\my-project\run-scene-backend\libs\file-manager
+	github.com/heyango/file-processor => E:\hxy\my-project\run-scene-backend\libs\file-processor
 )

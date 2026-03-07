@@ -1,11 +1,9 @@
-import router from "@renderer/router";
-import { createImg } from "@utils/UtilsJsx/UtilsJsxPublic";
 import { defineComponent, reactive, ref } from "vue";
 import "./styles/projectWindow.less";
-import { ipcRenderer, tPath } from "@utils/UtilsExports";
-import { TypePageContent } from "./Home/Content";
-import { Obj } from "js-funcs";
-import { getAssetsPath } from "@utils/contant";
+import type { Obj } from "js-funcs";
+import { getAssetsPath } from "../utils/contant";
+import router from "../router";
+import { createImg } from "../utils/UtilsJsx/UtilsJsxPublic";
 export default defineComponent({
   name: "ProjectWindow",
   setup: () => () => com(),
@@ -20,7 +18,7 @@ const ins = new (class {
     const assetsPath = await getAssetsPath();
     if (router.currentRoute.value.query) {
       map = router.currentRoute.value.query as any as {
-        type: TypePageContent["savedItem"]["type"];
+        type: any;
         link: string;
         name: string;
       };
@@ -42,10 +40,10 @@ const ins = new (class {
     data.url = link;
 
     if (type === "videoPath") {
-      data.url = tPath.join(assetsPath, link);
+      // data.url = tPath.join(assetsPath, link);
       data.isUrl = false;
     } else if (type === "local") {
-      data.url = tPath.join(assetsPath, link + "\\index.html");
+      // data.url = tPath.join(assetsPath, link + "\\index.html");
     }
     console.log(link, data, "link");
     // if (projectName) {
@@ -56,7 +54,7 @@ const ins = new (class {
     // }
     window.addEventListener("resize", async () => {
       console.log(refData.full.value, "   refData.full.value");
-      refData.full.value = await ipcRenderer.invoke("isFull");
+      // refData.full.value = await ipcRenderer.invoke("isFull");
     });
   }
   data = reactive({
@@ -73,9 +71,7 @@ const menu = [
   {
     name: "mini",
     img: "miniWin",
-    click: () => {
-      ipcRenderer.invoke("windows-mini");
-    },
+    click: () => {},
   },
   {
     name: "win",
@@ -84,19 +80,13 @@ const menu = [
     img: "bigWin",
     click: () => {
       refData.full.value = !refData.full.value;
-      ipcRenderer.invoke("window-max").then((res) => {
-        console.log(refData.full.value, "efData.full");
-        // refData.full = res.status;
-      });
     },
   },
 
   {
     name: "close",
     img: "closeWin",
-    click: () => {
-      ipcRenderer.invoke("window-close");
-    },
+    click: () => {},
   },
 ];
 const com = () => {
@@ -114,7 +104,7 @@ const com = () => {
             return (
               <div onClick={i.click} class={i.name}>
                 {createImg(
-                  "projectWindow/" + (i.elseVal?.value ? i.elseImg : i.img)
+                  "projectWindow/" + (i.elseVal?.value ? i.elseImg : i.img),
                 )}
               </div>
             );

@@ -1,0 +1,32 @@
+# File Library 配置
+file_library:
+  # 存储根目录
+  storage_root: "./static/cdn"
+
+  # 临时文件目录
+  temp_dir: "./tmp/uploads"
+  base_url: "http://192.168.3.39:23370/documents" # 文件的网络访问地址
+
+  # 文件分类目录
+  categories:
+    image: "images"
+    video: "videos"
+    document: "documents"
+    html: "html"
+    other: "files"
+
+  # 文件大小限制
+  max_file_size:
+    image: 20971520 # 20MB
+    video: 524288000 # 500MB
+    document: 52428800 # 50MB
+    html: 104857600 # 100MB
+    other: 104857600 # 100MB
+
+  # 自动清理配置
+  cleanup:
+    enabled: true
+    # 临时文件保留时间（小时）
+    temp_retention: 24
+    # 清理间隔（小时）
+    interval: 6

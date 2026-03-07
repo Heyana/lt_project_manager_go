@@ -56,6 +56,12 @@ func (a *AppCore) InitDatabases() error {
 		return err
 	}
 
+	// 初始化文件服务
+	if err := a.InitFileServices(); err != nil {
+		a.Log.Errorf("文件服务初始化失败: %v", err)
+		return err
+	}
+
 	return nil
 }
 
@@ -84,6 +90,18 @@ func (a *AppCore) InitBackupService() error {
 	}
 
 	a.Log.Info("备份服务初始化成功")
+	return nil
+}
+
+// InitFileServices 初始化文件服务
+func (a *AppCore) InitFileServices() error {
+	a.Log.Info("正在初始化文件服务...")
+
+	if err := services.InitFileServices(); err != nil {
+		return err
+	}
+
+	a.Log.Info("文件服务初始化成功")
 	return nil
 }
 
@@ -158,6 +176,14 @@ func (a *AppCore) Shutdown() {
 		a.Log.Errorf("❌ 关闭数据库失败: %v", err)
 	} else {
 		a.Log.Info("✅ 数据库连接已关闭")
+	}
+
+	// 4. 关闭文件服务
+	a.Log.Info("⏳ 正在关闭文件服务...")
+	if err := services.CloseFileServices(); err != nil {
+		a.Log.Errorf("❌ 关闭文件服务失败: %v", err)
+	} else {
+		a.Log.Info("✅ 文件服务已关闭")
 	}
 
 	a.Log.Info("👋 优雅停机完成")

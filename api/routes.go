@@ -8,6 +8,7 @@ import (
 	"go_wails_project_manager/controllers"
 	"go_wails_project_manager/middleware"
 	"go_wails_project_manager/response"
+	"go_wails_project_manager/services"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
@@ -84,10 +85,24 @@ func RegisterRoutes(router *gin.Engine, log *logrus.Logger) {
 		})
 	})
 
+	// 设置文件上传大小限制
+	router.MaxMultipartMemory = 100 << 20 // 100MB
+
+	// 注意：静态文件服务 /cdn 已在 server.go 中配置
+
 	// 设置API路由组
 	api := router.Group("/api")
 	{
 		api.GET("/ping", Ping)
+
+		// 注册 file-library 插件路由
+		if services.FileLibraryPlugin != nil {
+			if err := services.FileLibraryPlugin.RegisterRoutes(api); err != nil {
+				log.Errorf("注册 file-library 路由失败: %v", err)
+			} else {
+				log.Info("file-library 路由注册成功")
+			}
+		}
 
 		// 备份管理API
 		backup := api.Group("/backup")

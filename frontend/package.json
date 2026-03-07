@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-vue-jsx": "^5.1.4",
+    "ant-design-vue": "^4.2.6",
     "axios": "^1.13.6",
     "element-plus": "^2.13.3",
     "js-funcs": "^0.0.95",

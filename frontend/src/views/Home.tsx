@@ -11,12 +11,25 @@ export default defineComponent({
   setup: () => () => com(),
   mounted() {
     console.log(router.currentRoute.value, "router.currentRoute.value");
-    watch(
-      () => router.currentRoute.value.params.id,
-      () => {
-        const id = router.currentRoute.value.params.id;
-        const tId = Number(id);
+
+    // 初始化当前激活索引
+    const updateActiveIndex = () => {
+      const route = router.currentRoute.value;
+      if (route.name === "fileLibrary") {
+        ins.data.atvIdx = 5; // 文件库的索引
+      } else {
+        const id = route.params.id;
+        const tId = Number(id) || 0;
         ins.data.atvIdx = tId;
+      }
+    };
+
+    updateActiveIndex();
+
+    watch(
+      () => router.currentRoute.value.name,
+      () => {
+        updateActiveIndex();
       },
     );
   },
@@ -50,6 +63,12 @@ export const homeMenu = {
     icon: "homeMenuIcon",
     click: (idx: number) => {},
   },
+  fileDoc: {
+    name: "文件库",
+    icon: "homeMenuIcon",
+    routerName: "fileLibrary",
+    click: (idx: number) => {},
+  },
 };
 const ins = new (class {
   init() {}
@@ -70,7 +89,13 @@ const com = () => (
                 onClick={() => {
                   ins.data.atvIdx = index;
                   v.click(index);
-                  router.push("/home/content/" + index);
+                  // 如果有 routerName，使用命名路由跳转
+                  if ((v as any).routerName) {
+                    router.push({ name: (v as any).routerName });
+                  } else {
+                    // 否则使用索引跳转
+                    router.push("/home/content/" + index);
+                  }
                 }}
               >
                 {createImg(v.icon)}
