@@ -1,5 +1,6 @@
 export const loadImg = (name: string, ext?: string) => {
-  return "/images/" + name + "." + (ext || "png");
+  // 使用 import.meta.env.BASE_URL，打包后会自动替换为正确的 base 路径
+  return import.meta.env.BASE_URL + "images/" + name + "." + (ext || "png");
 };
 export const createImg = (name: string, ext?: string) => {
   return <img src={loadImg(name, ext)} alt="" />;
